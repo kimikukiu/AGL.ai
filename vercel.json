@@ -4,19 +4,19 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "env": {
-    "VITE_APP_ID": "@vite_app_id",
-    "VITE_OAUTH_PORTAL_URL": "@vite_oauth_portal_url",
-    "VITE_APP_TITLE": "@vite_app_title",
-    "VITE_APP_LOGO": "@vite_app_logo",
-    "VITE_ANALYTICS_ENDPOINT": "@vite_analytics_endpoint",
-    "VITE_FRONTEND_FORGE_API_URL": "@vite_frontend_forge_api_url",
-    "VITE_FRONTEND_FORGE_API_KEY": "@vite_frontend_forge_api_key",
-    "VITE_ANALYTICS_WEBSITE_ID": "@vite_analytics_website_id",
-    "JWT_SECRET": "@jwt_secret",
-    "OAUTH_SERVER_URL": "@oauth_server_url",
-    "DATABASE_URL": "@database_url",
-    "BUILT_IN_FORGE_API_URL": "@built_in_forge_api_url",
-    "BUILT_IN_FORGE_API_KEY": "@built_in_forge_api_key"
+    "VITE_APP_ID": "PqpbSuTc7zoQqjcx4gU9DV",
+    "VITE_OAUTH_PORTAL_URL": "https://manus.im",
+    "VITE_APP_TITLE": "AGL.ai",
+    "VITE_APP_LOGO": "https://files.manuscdn.com/user_upload_by_module/web_dev_logo/310519663375123518/ohwsjrsRlYbUPUjt.png",
+    "VITE_ANALYTICS_ENDPOINT": "https://manus-analytics.com",
+    "VITE_FRONTEND_FORGE_API_URL": "https://forge.manus.ai",
+    "VITE_FRONTEND_FORGE_API_KEY": "Y6tW8eKyp7hGChFrL6RR7K",
+    "VITE_ANALYTICS_WEBSITE_ID": "82c580ad-e836-40d1-8284-604fbdd3b2d8",
+    "JWT_SECRET": "4Vg3AVgZAGSDTMKAHcQRFg",
+    "OAUTH_SERVER_URL": "https://api.manus.ai",
+    "DATABASE_URL": "mysql://2xnypDGAWFmJcQ1.1aee7d177719:5nX3wMDza931KUP1Bbij@gateway04.us-east-1.prod.aws.tidbcloud.com:4000/PqpbSuTc7zoQqjcx4gU9DV?ssl={\"rejectUnauthorized\":true}",
+    "BUILT_IN_FORGE_API_URL": "https://forge.manus.ai",
+    "BUILT_IN_FORGE_API_KEY": "WLvLHd5t9ZigThrDYqKoWY"
   },
   "functions": {
     "server/_core/index.ts": {
