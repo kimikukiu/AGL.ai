@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, Check, ExternalLink } from 'lucide-react';
+import { useLocation } from 'wouter';
 
 export default function Pricing() {
+  const [, setLocation] = useLocation();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [promoCode, setPromoCode] = useState('');
   const [promoDiscount, setPromoDiscount] = useState(0);
@@ -164,7 +166,10 @@ export default function Pricing() {
                   <p className="text-xs text-cyan-400 mt-2 font-mono">{plan.tokens.toLocaleString()} TOKENS</p>
                 </div>
 
-                <Button className="w-full mb-6 bg-gradient-to-r from-cyan-500 to-pink-500 hover:from-cyan-600 hover:to-pink-600 text-black font-black">
+                <Button
+                  onClick={() => setLocation('/payment')}
+                  className="w-full mb-6 bg-gradient-to-r from-cyan-500 to-pink-500 hover:from-cyan-600 hover:to-pink-600 text-black font-black"
+                >
                   GET STARTED
                 </Button>
 
@@ -223,8 +228,33 @@ export default function Pricing() {
         </div>
 
         {/* Footer */}
-        <div className="container mx-auto px-4 py-12 border-t-2 border-cyan-500/20 text-center text-gray-500 text-sm">
-          <p>Questions? Contact us at support@agl.ai</p>
+        <div className="container mx-auto px-4 py-12 border-t-2 border-cyan-500/20">
+          <div className="text-center mb-8">
+            <p className="text-gray-400 mb-4">Need help? Join our community or contact support</p>
+            <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <a
+                href="https://t.me/loghandelbot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-bold transition-colors"
+              >
+                <ExternalLink size={16} />
+                Support Bot: t.me/loghandelbot
+              </a>
+              <a
+                href="https://t.me/cybersecunity"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-pink-400 hover:text-pink-300 font-bold transition-colors"
+              >
+                <ExternalLink size={16} />
+                Join Channel: t.me/cybersecunity
+              </a>
+            </div>
+          </div>
+          <div className="text-center text-gray-500 text-xs">
+            <p>© 2026 AGL.ai - Advanced AI Security Platform</p>
+          </div>
         </div>
       </div>
     </div>
