@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "pnpm install && pnpm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "dist/public",
   "framework": "vite",
   "env": {
     "VITE_APP_ID": "PqpbSuTc7zoQqjcx4gU9DV",
@@ -19,10 +19,6 @@
     "BUILT_IN_FORGE_API_KEY": "WLvLHd5t9ZigThrDYqKoWY"
   },
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/server/_core/index.ts"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
