@@ -253,7 +253,7 @@ export default function Pricing() {
             </div>
           </div>
           <div className="text-center text-gray-500 text-xs">
-            <p>© 2026 AGL.ai - Advanced AI Security Platform</p>
+            <p>© 2026 CYBERSEC U.N.I.T.Y - Advanced AI Security Platform</p>
           </div>
         </div>
       </div>
