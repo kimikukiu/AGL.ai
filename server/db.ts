@@ -281,6 +281,13 @@ export async function initializeAIModels() {
       tagline: 'Privacy & Anonymity',
       description: 'Privacy-first solutions, anonymity techniques, and secure communication methods',
     },
+    {
+      name: 'Red Team Operator',
+      slug: 'red-team-operator',
+      emoji: '🎯',
+      tagline: 'Advanced Red Team Operations',
+      description: 'Deep reasoning and advanced pentesting strategies for comprehensive security assessments',
+    },
   ];
 
   for (const model of defaultModels) {
