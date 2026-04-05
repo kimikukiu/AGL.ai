@@ -18,7 +18,16 @@
     "BUILT_IN_FORGE_API_URL": "https://forge.manus.ai",
     "BUILT_IN_FORGE_API_KEY": "WLvLHd5t9ZigThrDYqKoWY"
   },
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
