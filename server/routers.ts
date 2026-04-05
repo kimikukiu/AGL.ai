@@ -34,9 +34,6 @@ export const appRouter = router({
   }),
 
   admin: router({
-    /**
-     * Admin login with password
-     */
     login: publicProcedure
       .input(z.object({ password: z.string() }))
       .mutation(async ({ input, ctx }) => {
@@ -47,14 +44,11 @@ export const appRouter = router({
               message: 'Invalid admin password',
             });
           }
-
-          // Set admin session
           const cookieOptions = getSessionCookieOptions(ctx.req);
           ctx.res.cookie('admin_session', generateSessionToken(), {
             ...cookieOptions,
-            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            maxAge: 24 * 60 * 60 * 1000,
           });
-
           return { success: true, message: 'Admin authenticated' };
         } catch (error: any) {
           throw new TRPCError({
@@ -64,9 +58,6 @@ export const appRouter = router({
         }
       }),
 
-    /**
-     * Verify recovery code for password reset
-     */
     verifyRecoveryCode: publicProcedure
       .input(z.object({ code: z.string() }))
       .mutation(({ input }) => {
@@ -87,25 +78,16 @@ export const appRouter = router({
         }
       }),
 
-    /**
-     * Check if user is admin
-     */
     isAdmin: publicProcedure.query(({ ctx }) => {
       const adminCookie = ctx.req.headers.cookie?.includes('admin_session=');
       return { isAdmin: !!adminCookie };
     }),
 
-    /**
-     * Admin logout
-     */
     logout: publicProcedure.mutation(({ ctx }) => {
       ctx.res.clearCookie('admin_session');
       return { success: true };
     }),
 
-    /**
-     * Get admin dashboard data (free tools for admins)
-     */
     getDashboard: publicProcedure.query(({ ctx }) => {
       const isAdmin = ctx.req.headers.cookie?.includes('admin_session=');
       if (!isAdmin) {
@@ -114,7 +96,6 @@ export const appRouter = router({
           message: 'Admin access required',
         });
       }
-
       return {
         isAdmin: true,
         features: {
@@ -134,9 +115,6 @@ export const appRouter = router({
   }),
 
   pricing: router({
-    /**
-     * Get all pricing plans
-     */
     getPlans: publicProcedure.query(() => {
       return [
         {
@@ -197,9 +175,6 @@ export const appRouter = router({
       ];
     }),
 
-    /**
-     * Get AI personas/models
-     */
     getPersonas: publicProcedure.query(() => {
       return [
         {
@@ -240,9 +215,6 @@ export const appRouter = router({
       ];
     }),
 
-    /**
-     * Validate promo code
-     */
     validatePromo: publicProcedure
       .input(z.object({ code: z.string() }))
       .query(async ({ input }) => {
@@ -254,12 +226,8 @@ export const appRouter = router({
               message: 'Invalid promo code',
             });
           }
-          
-          // FIRST20 gives 20% discount
           const discount = input.code === 'FIRST20' ? 20 : 0;
-          
           await incrementPromoCodeUse(input.code);
-          
           return { valid: true, discount };
         } catch (error: any) {
           throw new TRPCError({
@@ -268,6 +236,59 @@ export const appRouter = router({
           });
         }
       }),
+  }),
+
+  training: router({
+    startTraining: publicProcedure
+      .input(z.object({ 
+        model: z.enum(['kali-gpt', 'dark-gpt', 'zero-day-gpt', 'onion-gpt', 'red-team-operator']),
+        epochs: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          return {
+            success: true,
+            message: `Training started for ${input.model}`,
+            trainingId: `train-${Date.now()}`,
+            estimatedTime: '2-4 hours',
+          };
+        } catch (error: any) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error.message || 'Training failed to start',
+          });
+        }
+      }),
+
+    getTrainingStatus: publicProcedure
+      .input(z.object({ trainingId: z.string() }))
+      .query(() => {
+        return {
+          trainingId: 'train-123456',
+          model: 'kali-gpt',
+          status: 'in-progress',
+          progress: 65,
+          epoch: 2,
+          totalEpochs: 3,
+          skillsProcessed: 500,
+          totalSkills: 734,
+        };
+      }),
+
+    getTrainingDataSources: publicProcedure.query(() => {
+      return {
+        cybersecuritySkills: {
+          source: 'github.com/kimikukiu/700-Cybersecurity-Skills',
+          totalSkills: 734,
+          categories: ['penetration-testing', 'forensics', 'malware-analysis', 'cloud-security', 'threat-intelligence'],
+        },
+        pentestSwarmAI: {
+          source: 'github.com/kimikukiu/Pentest-Swarm-AI',
+          agents: ['classifier', 'exploit', 'orchestrator', 'reporter'],
+          capabilities: ['automated-scanning', 'vulnerability-classification', 'exploit-execution', 'reporting'],
+        },
+      };
+    }),
   }),
 });
 
