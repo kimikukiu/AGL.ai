@@ -164,37 +164,115 @@
             this.context = null;
             this.plan = [];
             this.currentStep = 0;
+            this.trainingCurriculum = null;
+            this.workflowSteps = [
+                'analyzeContext',
+                'think',
+                'selectTool',
+                'executeAction',
+                'receiveObservation',
+                'iterate'
+            ];
         }
 
         analyzeContext(input, environment) {
             this.context = { input, environment, timestamp: Date.now() };
             console.log('[Manus] Context analyzed:', this.context);
+            this.generatePlanFromInput(input);
             return this.context;
         }
 
-        think() {
-            if (!this.plan.length) {
-                this.plan = ['selectTool', 'executeAction', 'receiveObservation'];
+        generatePlanFromInput(input) {
+            // Load training curriculum if available
+            if (typeof window !== 'undefined' && window.__MANUS_TRAINING__) {
+                this.trainingCurriculum = window.__MANUS_TRAINING__;
+                console.log('[Manus] Training curriculum loaded, length:', this.trainingCurriculum.length);
             }
-            const action = this.plan[this.currentStep];
-            console.log('[Manus] Thinking:', action);
-            return action;
+
+            // Basic logic: split input into tasks
+            const tasks = input.split(/(?:then|and then|next|,)/i).map(t => t.trim()).filter(t => t.length > 0);
+            if (tasks.length > 0) {
+                this.plan = tasks.map((task, idx) => ({
+                    step: idx,
+                    task,
+                    status: 'pending',
+                    tool: null,
+                    result: null
+                }));
+                console.log('[Manus] Generated plan with', this.plan.length, 'steps');
+            } else {
+                this.plan = [{
+                    step: 0,
+                    task: input,
+                    status: 'pending',
+                    tool: null,
+                    result: null
+                }];
+            }
+            this.currentStep = 0;
+        }
+
+        think() {
+            if (this.currentStep >= this.plan.length) {
+                return 'complete';
+            }
+
+            const currentTask = this.plan[this.currentStep];
+            console.log('[Manus] Thinking about task:', currentTask.task);
+            
+            // Determine next action based on workflow
+            if (currentTask.status === 'pending') {
+                return 'selectTool';
+            } else if (currentTask.status === 'executing') {
+                return 'executeAction';
+            } else if (currentTask.status === 'observing') {
+                return 'receiveObservation';
+            }
+            
+            return 'continue';
         }
 
         selectTool(action) {
             const tools = ['shell', 'file', 'search', 'browser', 'generate', 'slides', 'schedule', 'expose', 'message'];
-            const tool = tools[Math.floor(Math.random() * tools.length)];
-            console.log('[Manus] Selected tool:', tool);
-            return tool;
+            // Simple logic: match tool to task keywords
+            const currentTask = this.plan[this.currentStep];
+            let selectedTool = 'file'; // default
+            
+            if (/search|find|query/i.test(currentTask.task)) selectedTool = 'search';
+            else if (/file|read|write|edit/i.test(currentTask.task)) selectedTool = 'file';
+            else if (/browser|web|url/i.test(currentTask.task)) selectedTool = 'browser';
+            else if (/generate|create|make/i.test(currentTask.task)) selectedTool = 'generate';
+            else selectedTool = tools[Math.floor(Math.random() * tools.length)];
+            
+            currentTask.tool = selectedTool;
+            currentTask.status = 'executing';
+            console.log('[Manus] Selected tool:', selectedTool, 'for task:', currentTask.task);
+            return selectedTool;
         }
 
         async executeAction(tool, params) {
-            console.log('[Manus] Executing', tool, params);
-            return { status: 'success', output: `Executed ${tool}` };
+            console.log('[Manus] Executing', tool, 'with params:', params);
+            const currentTask = this.plan[this.currentStep];
+            currentTask.status = 'executing';
+            
+            // Simulate execution
+            const result = { 
+                status: 'success', 
+                output: `Executed ${tool} for task: ${currentTask.task}`,
+                timestamp: Date.now()
+            };
+            
+            currentTask.result = result;
+            currentTask.status = 'observing';
+            return result;
         }
 
         receiveObservation(result) {
             console.log('[Manus] Observation:', result);
+            const currentTask = this.plan[this.currentStep];
+            currentTask.status = 'completed';
+            currentTask.result = result;
+            
             this.currentStep++;
             if (this.currentStep >= this.plan.length) {
                 return 'complete';
@@ -202,20 +280,28 @@
             return 'continue';
         }
 
-        iterate() {
-            while (this.status !== 'complete') {
+        async iterate() {
+            this.status = 'running';
+            console.log('[Manus] Starting iteration with', this.plan.length, 'tasks');
+            
+            while (this.currentStep < this.plan.length) {
                 const action = this.think();
+                if (action === 'complete') {
+                    this.status = 'complete';
+                    break;
+                }
+                
                 if (action === 'selectTool') {
                     const tool = this.selectTool(action);
-                    const result = this.executeAction(tool, {});
+                    const result = await this.executeAction(tool, {});
                     const status = this.receiveObservation(result);
                     if (status === 'complete') {
-                        this.status = 'complete';
                         break;
                     }
                 }
             }
-            console.log('[Manus] Iteration complete');
+            console.log('[Manus] Iteration complete, status:', this.status);
+            return this.status;
         }
     }
 
