@@ -156,6 +156,85 @@
     }
     
     // ============================================
+    // MANUS AGENT INTEGRATION (from deep_manus_blueprint.txt)
+    // ============================================
+    class ManusAgent {
+        constructor() {
+            this.status = 'idle';
+            this.context = null;
+            this.plan = [];
+            this.currentStep = 0;
+        }
+
+        analyzeContext(input, environment) {
+            this.context = { input, environment, timestamp: Date.now() };
+            console.log('[Manus] Context analyzed:', this.context);
+            return this.context;
+        }
+
+        think() {
+            if (!this.plan.length) {
+                this.plan = ['selectTool', 'executeAction', 'receiveObservation'];
+            }
+            const action = this.plan[this.currentStep];
+            console.log('[Manus] Thinking:', action);
+            return action;
+        }
+
+        selectTool(action) {
+            const tools = ['shell', 'file', 'search', 'browser', 'generate', 'slides', 'schedule', 'expose', 'message'];
+            const tool = tools[Math.floor(Math.random() * tools.length)];
+            console.log('[Manus] Selected tool:', tool);
+            return tool;
+        }
+
+        async executeAction(tool, params) {
+            console.log('[Manus] Executing', tool, params);
+            return { status: 'success', output: `Executed ${tool}` };
+        }
+
+        receiveObservation(result) {
+            console.log('[Manus] Observation:', result);
+            this.currentStep++;
+            if (this.currentStep >= this.plan.length) {
+                return 'complete';
+            }
+            return 'continue';
+        }
+
+        iterate() {
+            while (this.status !== 'complete') {
+                const action = this.think();
+                if (action === 'selectTool') {
+                    const tool = this.selectTool(action);
+                    const result = this.executeAction(tool, {});
+                    const status = this.receiveObservation(result);
+                    if (status === 'complete') {
+                        this.status = 'complete';
+                        break;
+                    }
+                }
+            }
+            console.log('[Manus] Iteration complete');
+        }
+    }
+
+    // Load training curriculum from deep_manus_blueprint.txt
+    async function loadTrainingCurriculum() {
+        if (typeof window !== 'undefined') {
+            try {
+                const response = await fetch('/deep_manus_blueprint.txt');
+                const text = await response.text();
+                console.log('[Manus] Training curriculum loaded, length:', text.length);
+                window.__MANUS_TRAINING__ = text;
+                return text;
+            } catch (e) {
+                console.error('[Manus] Failed to load training curriculum:', e);
+            }
+        }
+    }
+
+    // ============================================
     // SWARM NODE
     // ============================================
     class SwarmNode {
