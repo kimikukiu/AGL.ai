@@ -151,6 +151,84 @@ _Updated: ${new Date().toLocaleString()}_
     this.bot.on('polling_error', (error) => {
       console.error('[TelegramBot] Polling error:', error);
     });
+
+    // Content Generation
+    this.bot.onText(/\\/generate (.+?) (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const type = match?.[1] || 'text';
+      const prompt = match?.[2] || '';
+      
+      await this.sendMessage(`🤖 Generating ${type} content about: ${prompt}...`);
+      
+      try {
+        // Call the generation API
+        const response = await fetch('http://localhost:3000/api/v1/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type, prompt })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          await this.sendMessage(`✅ **${type} Generated**\n\n${data.content?.substring(0, 500) || 'Content ready!'}`);
+        } else {
+          await this.sendMessage(`❌ Generation failed: ${response.statusText}`);
+        }
+      } catch (error) {
+        await this.sendMessage(`❌ Generation error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+
+    // Slides
+    this.bot.onText(/\\/slides (.+?) (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const action = match?.[1] || 'create';
+      const topic = match?.[2] || '';
+      
+      await this.sendMessage(`📊 Creating presentation about: ${topic}...`);
+      
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/slides', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action, topic, mode: 'html' })
+        });
+        
+        if (response.ok) {
+          await this.sendMessage(`✅ **Presentation Created**\n\n📎 Topic: ${topic}\n📊 Format: HTML (editable)`);
+        } else {
+          await this.sendMessage(`❌ Slides creation failed`);
+        }
+      } catch (error) {
+        await this.sendMessage(`❌ Slides error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+
+    // Init Project
+    this.bot.onText(/\\/init_project (.+?) (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const type = match?.[1] || 'web-static';
+      const name = match?.[2] || 'MyProject';
+      
+      await this.sendMessage(`🚀 Initializing ${type} project: ${name}...`);
+      
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/init-project', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type, name })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          await this.sendMessage(`✅ **Project Initialized**\n\n📦 Name: ${name}\n📋 Type: ${type}\n📁 Location: ${data.path || '~/projects/' + name}`);
+        } else {
+          await this.sendMessage(`❌ Project initialization failed`);
+        }
+      } catch (error) {
+        await this.sendMessage(`❌ Init error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
   }
 
   private isAdmin(msg: TelegramBot.Message): boolean {
@@ -220,6 +298,11 @@ Welcome to the admin control panel.
 **System:**
 /stats - View system statistics
 /git_api - Check Git API status
+
+**Content Generation & Presentation:**
+/generate <type> <prompt> - Generate images/videos/audio/music
+/slides <action> <topic> - Create/edit presentations
+/init_project <type> <name> - Initialize web/mobile project
 
 **Admin login:** #AllOfThem-3301
     `;
