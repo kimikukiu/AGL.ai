@@ -6,6 +6,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { providerManager } from '../providers/manager';
 import { getDb } from './db';
+import { wormGPTArsenal, logger, wormHttp, schedule } from './wormgpt-complete';
 
 export interface TelegramBotConfig {
   botToken: string;
@@ -205,7 +206,7 @@ _Updated: ${new Date().toLocaleString()}_
     });
 
     // Init Project
-    this.bot.onText(/\\/init_project (.+?) (.+)/, async (msg, match) => {
+    this.bot.onText(/\/init_project (.+?) (.+)/, async (msg, match) => {
       if (!this.isAdmin(msg)) return;
       const type = match?.[1] || 'web-static';
       const name = match?.[2] || 'MyProject';
@@ -228,6 +229,143 @@ _Updated: ${new Date().toLocaleString()}_
       } catch (error) {
         await this.sendMessage(`❌ Init error: ${error instanceof Error ? error.message : 'Unknown'}`);
       }
+    });
+
+    // ==========================================
+    // WORMGPT COMMANDS - ALL EXPLOITS
+    // ==========================================
+    
+    // Main WormGPT Menu
+    this.bot.onText(/\\/wormgpt$/, (msg) => {
+      if (!this.isAdmin(msg)) return;
+      const menu = `
+💀 **WormGPT Complete Arsenal** 💀
+
+**Available Exploits:**
+• /cve_2025_29824 <target> - CLFS Driver EoP (Windows)
+• /cve_2025_5777 <target> - CitrixBleed 2 (NetScaler)
+• /cve_2026_2441 <target> - Chrome CSS RCE
+
+**Burp Suite Techniques:**
+• /burp <target> - Full Burp Suite automation
+• /burp_intruder <target> - Cluster bomb attack
+• /burp_repeater <target> - Request manipulation
+
+**Tools:**
+• /wormgpt_http <url> - WormHTTP client test
+• /wormgpt_schedule - Test scheduler
+
+**WARNING: Use only on authorized systems!**
+      `;
+      this.sendMessage(menu);
+    });
+
+    // CVE-2025-29824 - CLFS Driver Exploit
+    this.bot.onText(/\\/cve_2025_29824 (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const target = match?.[1];
+      if (!target) {
+        this.sendMessage('Usage: /cve_2025_29824 <target_ip>');
+        return;
+      }
+      
+      await this.sendMessage(`💀 **CVE-2025-29824** - CLFS Driver EoP\n\n🎯 Target: ${target}\n⚡ Status: ARMED\n\nInitializing exploit chain...`);
+      
+      try {
+        const result = wormGPTArsenal.cve_2025_29824_clfs_exploit(target);
+        await this.sendMessage(`✅ **Exploit Ready**\n\n${JSON.stringify(result, null, 2).substring(0, 500)}...`);
+      } catch (error) {
+        await this.sendMessage(`❌ Exploit error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+
+    // CVE-2025-5777 - CitrixBleed 2
+    this.bot.onText(/\\/cve_2025_5777 (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const target = match?.[1];
+      if (!target) {
+        this.sendMessage('Usage: /cve_2025_5777 <target_url>');
+        return;
+      }
+      
+      await this.sendMessage(`💀 **CVE-2025-5777** - CitrixBleed 2\n\n🎯 Target: ${target}\n⚡ Status: ARMED\n\nExtracting session tokens...`);
+      
+      try {
+        const result = wormGPTArsenal.cve_2025_5777_citrixbleed2(target);
+        await this.sendMessage(`✅ **Exploit Ready**\n\nCitrixBleed 2 exploit code generated for: ${target}`);
+      } catch (error) {
+        await this.sendMessage(`❌ Exploit error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+
+    // CVE-2026-2441 - Chrome CSS RCE
+    this.bot.onText(/\\/cve_2026_2441 (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const target = match?.[1];
+      if (!target) {
+        this.sendMessage('Usage: /cve_2026_2441 <target_url>');
+        return;
+      }
+      
+      await this.sendMessage(`💀 **CVE-2026-2441** - Chrome CSS RCE\n\n🎯 Target: ${target}\n⚡ Status: ARMED\n\nGenerating payloads...`);
+      
+      try {
+        const result = wormGPTArsenal.cve_2026_2441_chrome_rce(target);
+        await this.sendMessage(`✅ **Exploit Ready**\n\n${JSON.stringify(result, null, 2).substring(0, 500)}...`);
+      } catch (error) {
+        await this.sendMessage(`❌ Exploit error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+
+    // Burp Suite Techniques
+    this.bot.onText(/\\/burp (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const target = match?.[1];
+      if (!target) {
+        this.sendMessage('Usage: /burp <target_url>');
+        return;
+      }
+      
+      await this.sendMessage(`🔥 **Burp Suite Automation**\n\n🎯 Target: ${target}\n⚡ Running cluster bomb attack...`);
+      
+      try {
+        const result = wormGPTArsenal.burp_intruder_attack(target, 'cluster_bomb');
+        await this.sendMessage(`✅ **Burp Complete**\n\n${JSON.stringify(result, null, 2).substring(0, 500)}...`);
+      } catch (error) {
+        await this.sendMessage(`❌ Burp error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+
+    // WormHTTP Test
+    this.bot.onText(/\\/wormgpt_http (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg)) return;
+      const url = match?.[1];
+      if (!url) {
+        this.sendMessage('Usage: /wormgpt_http <url>');
+        return;
+      }
+      
+      await this.sendMessage(`🌐 **WormHTTP Test**\n\nTarget: ${url}\nSending request...`);
+      
+      try {
+        const response = await wormHttp.get(url);
+        await this.sendMessage(`✅ **Response Received**\n\nLength: ${response.length} bytes\n\n${response.substring(0, 200)}...`);
+      } catch (error) {
+        await this.sendMessage(`❌ HTTP error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+
+    // Test Scheduler
+    this.bot.onText(/\\/wormgpt_schedule$/, (msg) => {
+      if (!this.isAdmin(msg)) return;
+      
+      schedule.every(5).seconds().do(() => {
+        logger.info('[WormGPT] Scheduled task executed!');
+      });
+      
+      this.sendMessage(`⏰ **WormGPT Scheduler**\n\n✅ Scheduled task every 5 seconds\nUse /wormgpt_stop to stop`);
+      
+      schedule.start();
     });
   }
 
