@@ -1,12 +1,16 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npx vite build",
+  "buildCommand": "cd client && npm install && npx vite build",
   "outputDirectory": "client/dist",
-  "builds": [
-    { "src": "api/telegram.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/telegram", "dest": "/api/telegram.js" },
-    { "src": "/(.*)", "dest": "/client/dist/$1" }
+  "installCommand": "cd client && npm install",
+  "devCommand": "cd client && npm run dev",
+  "functions": {
+    "api/telegram.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/telegram", "destination": "/api/telegram.js" },
+    { "source": "/(.*)", "destination": "/client/dist/$1" }
   ]
 }
