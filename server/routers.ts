@@ -20,10 +20,13 @@ import {
   updateAdminLoginAttempt,
 } from "./db";
 import { TRPCError } from "@trpc/server";
+import { providersAdminRouter } from "./providers-admin";
 
 export const appRouter = router({
   system: systemRouter,
   
+  providers: providersAdminRouter,
+
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

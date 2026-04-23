@@ -8,6 +8,12 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
+// Import provider system and API v1 routes
+import { providerManager } from "../providers/manager";
+import v1ChatRouter from "../api-v1/chat";
+import v1CompletionRouter from "../api-v1/completion";
+import v1ProvidersRouter from "../api-v1/providers";
+
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -43,6 +49,21 @@ async function startServer() {
       createContext,
     })
   );
+
+  // API v1 routes - Unified LLM endpoints
+  app.use("/api/v1/llm", v1ChatRouter);
+  app.use("/api/v1/llm", v1CompletionRouter);
+  app.use("/api/v1", v1ProvidersRouter);
+
+  // Initialize provider manager with GitHub token from env
+  console.log("[Server] Initializing LLM Provider Manager...");
+  const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_API_KEY;
+  if (githubToken) {
+    console.log("[Server] GitHub token detected - GitHub Models API available");
+  } else {
+    console.warn("[Server] No GitHub token found - set GITHUB_TOKEN env var for free LLM access");
+  }
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
