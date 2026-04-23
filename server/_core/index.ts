@@ -64,6 +64,25 @@ async function startServer() {
     console.warn("[Server] No GitHub token found - set GITHUB_TOKEN env var for free LLM access");
   }
 
+  // Initialize and start Telegram bot if enabled
+  if (process***REMOVED***.TELEGRAM_BOT_ENABLED === 'true' && process***REMOVED***.TELEGRAM_BOT_TOKEN) {
+    console.log("[Server] Starting Telegram bot...");
+    try {
+      // Dynamic import to avoid circular dependencies
+      import("../telegram-bot").then((module) => {
+        const bot = new module.AGLTelegramBot();
+        bot.start();
+        console.log("[Server] Telegram bot started successfully!");
+      }).catch(err => {
+        console.error("[Server] Failed to start Telegram bot:", err.message);
+      });
+    } catch (err) {
+      console.error("[Server] Telegram bot initialization error:", err);
+    }
+  } else {
+    console.log("[Server] Telegram bot disabled or not configured");
+  }
+
   // development mode uses Vite, production mode uses static files
   if (process***REMOVED***.NODE_ENV === "development") {
     await setupVite(app, server);
