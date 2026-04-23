@@ -46,7 +46,7 @@ export default function AutoPostImages() {
             disabled={isGenerating || !prompt}
             className="w-full"
           >
-            {isGenerating ? "Generating..." : "🤖 Generate Description (FREE)"}
+            {isGenerating ? "Generating..." : "🤖 Generate Description "}
           </Button>
         </div>
       </Card>

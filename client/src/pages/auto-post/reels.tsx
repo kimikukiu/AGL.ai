@@ -52,7 +52,7 @@ export default function AutoPostReels() {
             disabled={isGenerating || !topic}
             className="w-full"
           >
-            {isGenerating ? "Generating..." : "🤖 Generate with AI (FREE)"}
+            {isGenerating ? "Generating..." : "🤖 Generate with AI "}
           </Button>
         </div>
       </Card>

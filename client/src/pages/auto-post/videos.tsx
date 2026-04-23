@@ -48,7 +48,7 @@ export default function AutoPostVideos() {
             disabled={isGenerating || !topic}
             className="w-full"
           >
-            {isGenerating ? "Generating..." : "🤖 Generate Script with AI (FREE)"}
+            {isGenerating ? "Generating..." : "🤖 Generate Script with AI "}
           </Button>
         </div>
       </Card>
