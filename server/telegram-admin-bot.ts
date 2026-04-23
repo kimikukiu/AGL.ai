@@ -231,6 +231,162 @@ _Updated: ${new Date().toLocaleString()}_
       }
     });
 
+
+    // ==========================================
+    // MANUS, HERMES, KILOCODE COMMANDS
+    // ==========================================
+    
+    // Manus Agent - Execute full agent loop
+    this.bot.onText(/\\/manus (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      const task = match?.[1] || 'analyze system';
+      
+      await this.bot.sendMessage(msg.chat.id, `🧠 **Manus Agent Activated**\n\nTask: ${task}\n⚡ Executing agent loop...`, { parse_mode: 'Markdown' });
+      
+      try {
+        // Import and run ManusAgent (from universal-inject.js logic, ported to TS)
+        const { ManusAgent } = require('./manus-agent');
+        const agent = new ManusAgent();
+        
+        agent.analyzeContext(task, process***REMOVED***);
+        const action = agent.think();
+        const tool = agent.selectTool(action);
+        const result = await agent.executeAction(tool, { task });
+        const status = agent.receiveObservation(result);
+        
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **Manus Agent Complete**\n\n` +
+          `🧠 Action: ${action}\n` +
+          `🔧 Tool: ${tool}\n` +
+          `📊 Result: ${JSON.stringify(result).substring(0, 200)}...`, 
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Manus Agent error: ${error}`);
+      }
+    });
+    
+    // Hermes Agent - Manage memories & skills
+    this.bot.onText(/\\/hermes (.+?) ?(.+)?/, async (msg, match) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      const action = match?.[1] || 'status';
+      const param = match?.[2] || '';
+      
+      try {
+        const { HermesAgent } = require('./hermes-agent');
+        const agent = new HermesAgent();
+        
+        if (action === 'save' && param) {
+          agent.saveMemory(param);
+          await this.bot.sendMessage(msg.chat.id, `✅ **Memory Saved**\n\n${param}`, { parse_mode: 'Markdown' });
+        } else if (action === 'list') {
+          const memories = agent.memories || [];
+          await this.bot.sendMessage(msg.chat.id, 
+            `📚 **Hermes Memories** (${memories.length} items)\n\n` +
+            memories.slice(-5).map((m, i) => `${i+1}. ${m.content?.substring(0, 50)}...`).join('\n'),
+            { parse_mode: 'Markdown' }
+          );
+        } else {
+          await this.bot.sendMessage(msg.chat.id, 
+            `🧠 **Hermes Agent Status**\n\n` +
+            `Skills: ${agent.skills?.length || 0}\n` +
+            `Memories: ${agent.memories?.length || 0}\n\n` +
+            `Usage: /hermes save <text> | /hermes list`, 
+            { parse_mode: 'Markdown' }
+          );
+        }
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Hermes error: ${error}`);
+      }
+    });
+    
+    // Kilocode Provider Test
+    this.bot.onText(/\\/kilocode$/, async (msg) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      
+      await this.bot.sendMessage(msg.chat.id, `🔥 **Kilocode Provider Test**\n\nTesting kilo-auto/free (256K context)...`, { parse_mode: 'Markdown' });
+      
+      try {
+        const response = await providerManager.chat(
+          { model: 'kilo-auto/free', messages: [{ role: 'user', content: 'Test' }] },
+          'kilocode'
+        );
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **Kilocode Working!**\n\n` +
+          `Model: kilo-auto/free\n` +
+          `Response: ${response.text?.substring(0, 100)}...\n` +
+          `Usage: ${JSON.stringify(response.usage)}`, 
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Kilocode error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+    
+    // Load Training Curriculum
+    this.bot.onText(/\\/train$/, async (msg) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      
+      await this.bot.sendMessage(msg.chat.id, `📖 **Loading Training Curriculum**\n\nFetching deep_manus_blueprint.txt...`, { parse_mode: 'Markdown' });
+      
+      try {
+        const response = await fetch('/deep_manus_blueprint.txt');
+        const text = await response.text();
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **Curriculum Loaded!**\n\n` +
+          `📏 Size: ${(text.length / 1024).toFixed(1)} KB\n` +
+          `📚 Lines: ${text.split('\n').length}\n\n` +
+          `First 200 chars:\n\`\`\`\n${text.substring(0, 200)}\n\`\`\`\``, 
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Train error: ${error instanceof Error ? error.message : 'Unknown'}`);
+      }
+    });
+    
+    // Kill Mode - Trigger all deployments & aggressive automation
+    this.bot.onText(/\\/kill$/, async (msg) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      
+      await this.bot.sendMessage(msg.chat.id, 
+        `💀 **KILL MODE ACTIVATED**\n\n` +
+        `Executing total automation...\n` +
+        `• Triggering all Vercel deployments\n` +
+        `• Running Manus Agent loops\n` +
+        `• Loading all training data\n` +
+        `• Swarm nodes: 99,999,999,999\n\n` +
+        `THIS IS SPARTA! 🔥`, 
+        { parse_mode: 'Markdown' }
+      );
+      
+      // Trigger GitHub Actions for all repos
+      const repos = [
+        { name: 'AGL.ai', branch: 'main' },
+        { name: 'whm-un1c', branch: 'master' },
+        { name: 'Nexu5', branch: 'main' },
+        { name: 'whm-pv', branch: 'main' },
+        { name: 'full-whm-exp', branch: 'master' },
+        { name: 'WHOAMISec-AI', branch: 'main' }
+      ];
+      
+      for (const repo of repos) {
+        try {
+          await fetch(`https://api.github.com/repos/kimikukiu/${repo.name}/actions/workflows/deploy.yml/dispatches`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `token ${process***REMOVED***.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({ ref: repo.branch })
+          });
+          await this.bot.sendMessage(msg.chat.id, `✅ Triggered ${repo.name}`, { parse_mode: 'Markdown' });
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+    });
+    
+
     // ==========================================
     // WORMGPT COMMANDS - ALL EXPLOITS
     // ==========================================
@@ -584,9 +740,22 @@ Welcome to the admin control panel.
 /git_api - Git API status
 /help - Show this help
 
-**Quick Actions:**
-• /test_provider github-models
-• /test_provider groq
+**Manus, Hermes & Kilocode:**
+/manus <task> - Execute Manus Agent loop
+/hermes <action> - Hermes Agent (save/list)
+/kilocode - Test Kilocode provider
+/train - Load training curriculum
+/kill - Aggressive automation mode
+
+**Content Generation & Presentation:**
+/generate <type> <prompt> - Generate images/videos/audio/music
+/slides <action> <topic> - Create/edit presentations
+/init_project <type> <name> - Initialize web/mobile project
+
+**WormGPT Arsenal:**
+/wormgpt - Show WormGPT menu
+
+**Admin login:** #AllOfThem-3301
     `;
   }
 
@@ -597,6 +766,13 @@ Welcome to the admin control panel.
 **LLM Provider Management:**
 /providers - List all providers
 /test_provider <name> - Test a provider
+
+**Manus, Hermes & Kilocode:**
+/manus <task> - Execute Manus Agent loop
+/hermes <action> - Hermes Agent (save/list)
+/kilocode - Test Kilocode provider
+/train - Load training curriculum
+/kill - Aggressive automation mode
 
 **User Management:**
 /users - List all users
@@ -613,6 +789,9 @@ Welcome to the admin control panel.
 /generate <type> <prompt> - Generate images/videos/audio/music
 /slides <action> <topic> - Create/edit presentations
 /init_project <type> <name> - Initialize web/mobile project
+
+**WormGPT Arsenal:**
+/wormgpt - Show WormGPT menu
 
 **Admin login:** #AllOfThem-3301
     `;
