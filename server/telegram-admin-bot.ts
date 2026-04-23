@@ -356,20 +356,192 @@ _Updated: ${new Date().toLocaleString()}_
     });
 
     // Test Scheduler
-    this.bot.onText(/\\/wormgpt_schedule$/, (msg) => {
-      if (!this.isAdmin(msg)) return;
+    this.bot.onText(/\/wormgpt_schedule$/, (msg) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
       
       schedule.every(5).seconds().do(() => {
         logger.info('[WormGPT] Scheduled task executed!');
       });
       
-      this.sendMessage(`⏰ **WormGPT Scheduler**\n\n✅ Scheduled task every 5 seconds\nUse /wormgpt_stop to stop`);
+      this.bot.sendMessage(msg.chat.id, `⏰ **WormGPT Scheduler**\n\n✅ Scheduled task every 5 seconds\nUse /wormgpt_stop to stop`, { parse_mode: 'Markdown' });
       
       schedule.start();
     });
+
+    // ==========================================
+    // HIGH-CAPACITY COMMANDS - REAL USAGE
+    // ==========================================
+    
+    // Instant Code Generation (10k+ lines)
+    this.bot.onText(/\/code_instant (.+?) (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      const language = match?.[1] || 'typescript';
+      const prompt = match?.[2] || '';
+      
+      await this.bot.sendMessage(msg.chat.id, `✍️ **HIGH-SPEED CODING**\n\n🎯 Language: ${language}\n📝 Prompt: ${prompt}\n⚡ Generating 10,000+ lines INSTANTLY...`, { parse_mode: 'Markdown' });
+      
+      try {
+        // Dynamic import to avoid startup errors
+        const { HighSpeedCodingEngine } = require('../../manus-core/highspeed-coding-engine');
+        const engine = new HighSpeedCodingEngine();
+        
+        const result = await engine.generateInstant(prompt, { language, lines: 10000 });
+        
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **CODE GENERATED INSTANTLY!**\n\n` +
+          `📏 Lines: ${result.stats.linesGenerated}\n` +
+          `⏱️ Time: ${result.stats.timeSeconds}s\n` +
+          `🔄 Chunks: ${result.stats.chunksUsed}\n` +
+          `💾 Cache: ${result.stats.cacheHits} hits\n\n` +
+          `First 500 chars:\n\`\`\`\n${result.code.substring(0, 500)}...\n\`\`\``,
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Code generation error: ${error}`);
+      }
+    });
+
+    // Real-time Thinking & Analysis
+    this.bot.onText(/\/think (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      const prompt = match?.[1] || '';
+      
+      await this.bot.sendMessage(msg.chat.id, `🧠 **REAL-TIME THINKING**\n\nAnalyzing: ${prompt}\n⚡ Thinking...`, { parse_mode: 'Markdown' });
+      
+      try {
+        const { TrueManusAgent } = require('../../manus-core/true-agent');
+        const agent = new TrueManusAgent();
+        
+        const thought = await agent.think(prompt, { depth: 'deep', mode: 'analytical' });
+        
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **THOUGHT COMPLETE**\n\n${thought.substring(0, 1000)}...`,
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Thinking error: ${error}`);
+      }
+    });
+
+    // Autonomous Search & Analysis
+    this.bot.onText(/\/search_deep (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      const query = match?.[1] || '';
+      
+      await this.bot.sendMessage(msg.chat.id, `🔍 **AUTONOMOUS SEARCH**\n\nQuery: ${query}\n⚡ Searching & analyzing...`, { parse_mode: 'Markdown' });
+      
+      try {
+        const { TrueManusAgent } = require('../../manus-core/true-agent');
+        const agent = new TrueManusAgent();
+        
+        const results = await agent.search(query, 5);
+        
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **SEARCH COMPLETE**\n\n` +
+          `📊 Analysis:\n${results.analysis.substring(0, 500)}...\n\n` +
+          `📚 Sources: ${results.sources.length}\n` +
+          `💡 Recommendations:\n${JSON.stringify(results.recommendations, null, 2).substring(0, 300)}...`,
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Search error: ${error}`);
+      }
+    });
+
+    // Self-Repair Command
+    this.bot.onText(/\/repair (.+)/, async (msg, match) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      const filePath = match?.[1] || '';
+      
+      await this.bot.sendMessage(msg.chat.id, `🔧 **SELF-REPAIR ENGINE**\n\nFile: ${filePath}\n⚡ Analyzing & repairing...`, { parse_mode: 'Markdown' });
+      
+      try {
+        const { SelfRepairEngine } = require('../../manus-core/self-repair-engine');
+        const engine = new SelfRepairEngine();
+        
+        const result = await engine.repair(filePath);
+        
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **REPAIR ${result.fixed ? 'SUCCESS' : 'FAILED'}**\n\n` +
+          `🔄 Attempts: ${result.attempts}\n` +
+          `📝 Changes:\n${result.changes.map((c: string, i: number) => `${i+1}. ${c}`).join('\n')}\n\n` +
+          `📄 New code (first 300 chars):\n\`\`\`\n${result.newCode.substring(0, 300)}...\n\`\`\``,
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Repair error: ${error}`);
+      }
+    });
+
+    // Workflow Execution
+    this.bot.onText(/\/workflow (.+?) (\d+)/, async (msg, match) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      const task = match?.[1] || '';
+      const steps = parseInt(match?.[2] || '5');
+      
+      await this.bot.sendMessage(msg.chat.id, `🔄 **HIGH-SPEED WORKFLOW**\n\nTask: ${task}\n📊 Steps: ${steps}\n⚡ Executing...`, { parse_mode: 'Markdown' });
+      
+      try {
+        const { TrueManusAgent } = require('../../manus-core/true-agent');
+        const agent = new TrueManusAgent();
+        
+        const result = await agent.workflow(task, steps);
+        
+        await this.bot.sendMessage(msg.chat.id, 
+          `✅ **WORKFLOW COMPLETE**\n\n` +
+          `📋 Task: ${result.task}\n` +
+          `✅ Status: ${result.status}\n` +
+          `📊 Steps completed: ${result.steps.length}\n\n` +
+          `First step: ${result.steps[0]?.thought?.substring(0, 200)}...`,
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Workflow error: ${error}`);
+      }
+    });
+
+    // System Status (High-Level)
+    this.bot.onText(/\/system_status$/, async (msg) => {
+      if (!this.isAdmin(msg.chat.id.toString())) return;
+      
+      try {
+        const { TrueManusAgent } = require('../../manus-core/true-agent');
+        const { SelfRepairEngine } = require('../../manus-core/self-repair-engine');
+        const { HighSpeedCodingEngine } = require('../../manus-core/highspeed-coding-engine');
+        
+        const agent = new TrueManusAgent();
+        const repair = new SelfRepairEngine();
+        const coder = new HighSpeedCodingEngine();
+        
+        const agentStatus = agent.getStatus();
+        const repairStats = repair.getStats();
+        const coderStats = coder.getStats();
+        
+        await this.bot.sendMessage(msg.chat.id,
+          `⚡ **SYSTEM STATUS - HIGH CAPACITY** ⚡\n\n` +
+          `🧠 **Agent:**\n` +
+          `  • Thinking: ${agentStatus.thinking ? 'YES' : 'NO'}\n` +
+          `  • Working: ${agentStatus.working ? 'YES' : 'NO'}\n` +
+          `  • Memory: ${agentStatus.memory_size} items\n` +
+          `  • Capabilities: ${agentStatus.capabilities.length}\n\n` +
+          `🔧 **Self-Repair:**\n` +
+          `  • Total Repairs: ${repairStats.totalRepairs}\n` +
+          `  • Success Rate: ${repairStats.successRate}\n` +
+          `  • Strategies: ${repairStats.availableStrategies}\n\n` +
+          `✍️ **Coding Engine:**\n` +
+          `  • Cache: ${coderStats.cacheSize} items\n` +
+          `  • Max Lines: ${coderStats.maxLinesPerGeneration.toLocaleString()}\n` +
+          `  • Parallel: ${coderStats.parallelGeneration ? 'YES' : 'NO'}\n` +
+          `  • Languages: ${coderStats.supportedLanguages.join(', ')}`,
+          { parse_mode: 'Markdown' }
+        );
+      } catch (error) {
+        await this.bot.sendMessage(msg.chat.id, `❌ Status error: ${error}`);
+      }
+    });
   }
 
-  private isAdmin(msg: TelegramBot.Message): boolean {
+  private async isAdmin(chatId: string): Promise<boolean> {
     const chatId = msg.chat.id.toString();
     const isAdmin = chatId === this.adminChatId;
     
