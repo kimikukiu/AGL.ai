@@ -66,7 +66,7 @@ export default function AutoPostText() {
             disabled={isGenerating || !prompt}
             className="w-full"
           >
-            {isGenerating ? "Generating..." : "🤖 Generate Post with AI (FREE)"}
+            {isGenerating ? "Generating..." : "🤖 Generate Post with AI "}
           </Button>
         </div>
       </Card>
