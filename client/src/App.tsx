@@ -9,6 +9,7 @@ import Pricing from "./pages/Pricing";
 import Payment from "./pages/Payment";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import AutoPost from "./pages/auto-post";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -19,6 +20,7 @@ function Router() {
       <Route path={"/payment"} component={Payment} />
       <Route path={"/admin/login"} component={AdminLogin} />
       <Route path={"/admin/dashboard"} component={AdminDashboard} />
+      <Route path={"/auto-post"} component={AutoPost} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
