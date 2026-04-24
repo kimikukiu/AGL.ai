@@ -1907,7 +1907,7 @@ t in response.url.lower() or 'success' in response.text.lower():
             '/.git/config',
             '/.svn/entries',
             '/web.config',
-            '/***REMOVED***',
+            '/.env',
             '/phpinfo.php',
             '/test.php',
             '/info.php',

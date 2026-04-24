@@ -9702,7 +9702,7 @@ docker-compose up -d && docker exec -it [container_id] bash -c "echo Vulnerable 
 
 git clone https://github.com/Fosowl/agenticSeek.git
 cd agenticSeek
-mv ***REMOVED***.example ***REMOVED***
+mv .env.example .env
 
 https://github.com/namoradigital/scraping-whatsapp
 
@@ -11046,8 +11046,8 @@ logger.addHandler(handler)
 class StateFortress:
     def init(self):
         try:
-            self***REMOVED*** = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
-            self.db = self***REMOVED***.open_db(b'state')
+            self.env = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
+            self.db = self.env.open_db(b'state')
         except lmdb.Error as e:
             logger.error(f"LMDB initialization failed: {e}")
             raise
@@ -11056,14 +11056,14 @@ class StateFortress:
         return self
 
     def exit(self, exc_type, exc_val, exc_tb):
-        self***REMOVED***.close()
+        self.env.close()
         logger.info("LMDB environment closed")
 
     def save_state(self, key: str, value: bytes):
         if len(value) > MAX_STATE_SIZE:
             raise ValueError("State size exceeds 1GB limit")
         try:
-            with self***REMOVED***.begin(write=True, db=self.db) as txn:
+            with self.env.begin(write=True, db=self.db) as txn:
                 txn.put(key.encode(), value)
             logger.info(f"State saved: {key}")
         except lmdb.Error as e:
@@ -11072,7 +11072,7 @@ class StateFortress:
 
     def load_state(self, key: str) -> Optional[bytes]:
         try:
-            with self***REMOVED***.begin(db=self.db) as txn:
+            with self.env.begin(db=self.db) as txn:
                 return txn.get(key.encode())
         except lmdb.Error as e:
             logger.error(f"Failed to load state: {e}")
@@ -11084,8 +11084,8 @@ class VersionMachina:
         self.compressor = zstd.ZstdCompressor(level=ZSTD_COMPRESS_LEVEL)
         self.decompressor = zstd.ZstdDecompressor()
         try:
-            self***REMOVED*** = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
-            self.db = self***REMOVED***.open_db(b'versions')
+            self.env = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
+            self.db = self.env.open_db(b'versions')
         except lmdb.Error as e:
             logger.error(f"LMDB initialization failed: {e}")
             raise
@@ -11094,7 +11094,7 @@ class VersionMachina:
         return self
 
     def exit(self, exc_type, exc_val, exc_tb):
-        self***REMOVED***.close()
+        self.env.close()
         logger.info("VersionMachina LMDB environment closed")
 
     def _merkle_hash(self, data: bytes) -> bytes:
@@ -11143,7 +11143,7 @@ return True
             created_at = datetime.utcnow().isoformat(timespec='microseconds')
             delta = self._calculate_delta(b'', code)  # TODO: Compare with previous version
 
-            with self***REMOVED***.begin(write=True, db=self.db) as txn:
+            with self.env.begin(write=True, db=self.db) as txn:
                 txn.put(version_id, json.dumps({
                     'created_at': created_at,
                     'content_sha': content_hash.hex(),
@@ -15833,8 +15833,8 @@ logger.addHandler(handler)
 class StateFortress:
     def init(self):
         try:
-            self***REMOVED*** = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
-            self.db = self***REMOVED***.open_db(b'state')
+            self.env = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
+            self.db = self.env.open_db(b'state')
         except lmdb.Error as e:
             logger.error(f"LMDB initialization failed: {e}")
             raise
@@ -15843,14 +15843,14 @@ class StateFortress:
         return self
 
     def exit(self, exc_type, exc_val, exc_tb):
-        self***REMOVED***.close()
+        self.env.close()
         logger.info("LMDB environment closed")
 
     def save_state(self, key: str, value: bytes):
         if len(value) > MAX_STATE_SIZE:
             raise ValueError("State size exceeds 1GB limit")
         try:
-            with self***REMOVED***.begin(write=True, db=self.db) as txn:
+            with self.env.begin(write=True, db=self.db) as txn:
                 txn.put(key.encode(), value)
             logger.info(f"State saved: {key}")
         except lmdb.Error as e:
@@ -15859,7 +15859,7 @@ class StateFortress:
 
     def load_state(self, key: str) -> Optional[bytes]:
         try:
-            with self***REMOVED***.begin(db=self.db) as txn:
+            with self.env.begin(db=self.db) as txn:
                 return txn.get(key.encode())
         except lmdb.Error as e:
             logger.error(f"Failed to load state: {e}")
@@ -15871,8 +15871,8 @@ class VersionMachina:
         self.compressor = zstd.ZstdCompressor(level=ZSTD_COMPRESS_LEVEL)
         self.decompressor = zstd.ZstdDecompressor()
         try:
-            self***REMOVED*** = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
-            self.db = self***REMOVED***.open_db(b'versions')
+            self.env = lmdb.open(DB_PATH, map_size=MAX_STATE_SIZE, max_dbs=10)
+            self.db = self.env.open_db(b'versions')
         except lmdb.Error as e:
             logger.error(f"LMDB initialization failed: {e}")
             raise
@@ -15881,7 +15881,7 @@ class VersionMachina:
         return self
 
     def exit(self, exc_type, exc_val, exc_tb):
-        self***REMOVED***.close()
+        self.env.close()
         logger.info("VersionMachina LMDB environment closed")
 
     def _merkle_hash(self, data: bytes) -> bytes:
@@ -15930,7 +15930,7 @@ return True
             created_at = datetime.utcnow().isoformat(timespec='microseconds')
             delta = self._calculate_delta(b'', code)  # TODO: Compare with previous version
 
-            with self***REMOVED***.begin(write=True, db=self.db) as txn:
+            with self.env.begin(write=True, db=self.db) as txn:
                 txn.put(version_id, json.dumps({
                     'created_at': created_at,
                     'content_sha': content_hash.hex(),

